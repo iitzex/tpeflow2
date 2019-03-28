@@ -122,5 +122,5 @@ if __name__ == '__main__':
     count = df.groupby(['HOUR', 'TYP']).size().unstack()
     count.plot(kind='bar', stacked=True, color=['#fe9900', '#4D95F2'])
     plt.legend(loc=2)
-    plt.savefig('tpeflow.png')
+    plt.savefig('tpeflow2.png')
     plt.show()
