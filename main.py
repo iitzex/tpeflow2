@@ -8,12 +8,13 @@ import matplotlib.pyplot as plt
 from flask import Flask, render_template
 from bokeh.embed import components
 from bokeh.core.properties import value
-from bokeh.io import show, output_file
+from bokeh.io import save, show, output_file
 from bokeh.plotting import figure
 from bokeh.models import ColumnDataSource
 
 TRAFFIC = []
 FN = 'out.csv'
+TIMEOUT = 120
 app = Flask(__name__)
 
 
@@ -116,7 +117,7 @@ def cs(v):
     return cs
 
 
-def save():
+def execute():
     for i in range(1, 6):
         page(i, 'departures')
     for i in range(1, 6):
@@ -130,8 +131,6 @@ def save():
     df = pd.DataFrame(
         np.array(TRAFFIC), columns=['CS', 'TS', 'DATE', 'HOUR', 'TYP'])
     df.to_csv('out.csv')
-
-    return df
 
 
 def plt_draw(df):
@@ -160,7 +159,7 @@ def bokeh_draw():
     typ = ['ARR', 'DEP']
     colors = ["#FFCC00", "#3366FF"]
     p = figure(
-        plot_height=600,
+        plot_height=550,
         plot_width=800,
         title='TPEFlow',
         tools="hover",
@@ -182,28 +181,28 @@ def bokeh_draw():
     p.legend.location = "top_left"
     p.legend.orientation = "horizontal"
 
-    show(p)
+    save(p)
     return p
 
 
 def check():
-    global FN
+    global FN, TIMEOUT
     t = time.time()
 
     mt = os.path.getmtime(FN)
-    print(t, mt, t - mt)
+    # print(t, mt, t - mt)
 
-    return ((t - mt) > 900)
+    return ((t - mt) > TIMEOUT)
 
 
 @app.route('/')
 def home():
     if check():
-        save()
+        execute()
 
     bokeh_draw()
 
-    return app.send_static_file('index.html')
+    return render_template('index.html')
 
 
 if __name__ == '__main__':
