@@ -1,11 +1,20 @@
-import requests
+import os
 import time
+import requests
 from datetime import datetime, timedelta
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from flask import Flask, render_template
+from bokeh.embed import components
+from bokeh.core.properties import value
+from bokeh.io import show, output_file
+from bokeh.plotting import figure
+from bokeh.models import ColumnDataSource
 
 TRAFFIC = []
+FN = 'out.csv'
+app = Flask(__name__)
 
 
 def T(ts):
@@ -68,7 +77,7 @@ def fetch(i, t):
     return res.json()
 
 
-def get_list(i, typ):
+def page(i, typ):
     global TRAFFIC
     j = fetch(i, typ)
     data = j['result']['response']['airport']['pluginData']['schedule'][typ][
@@ -107,20 +116,96 @@ def cs(v):
     return cs
 
 
-if __name__ == '__main__':
+def save():
     for i in range(1, 6):
-        get_list(i, 'departures')
+        page(i, 'departures')
     for i in range(1, 6):
-        get_list(i, 'arrivals')
+        page(i, 'arrivals')
 
     # print(TRAFFIC)
+    # with open('tp.csv', 'w') as f:
+    #     for i in TRAFFIC:
+    #         f.write(f'{str(i)}\n')
 
     df = pd.DataFrame(
         np.array(TRAFFIC), columns=['CS', 'TS', 'DATE', 'HOUR', 'TYP'])
-    print(df)
+    df.to_csv('out.csv')
 
+    return df
+
+
+def plt_draw(df):
     count = df.groupby(['HOUR', 'TYP']).size().unstack()
     count.plot(kind='bar', stacked=True, color=['#fe9900', '#4D95F2'])
     plt.legend(loc=2)
     plt.savefig('tpeflow2.png')
-    plt.show()
+    # plt.show()
+
+
+def bokeh_draw():
+    output_file('templates/index.html')
+
+    df = pd.read_csv(FN)
+
+    count = df.groupby(['HOUR', 'TYP']).size().unstack()
+    hour = [i for i in range(len(count.index))]
+    source = {
+        'time': hour,
+        'ARR': count.ARR,
+        'DEP': count.DEP,
+    }
+
+    source = ColumnDataSource(source)
+
+    typ = ['ARR', 'DEP']
+    colors = ["#FFCC00", "#3366FF"]
+    p = figure(
+        plot_height=600,
+        plot_width=800,
+        title='TPEFlow',
+        tools="hover",
+        tooltips="($index)$name: @$name",
+        toolbar_location=None)
+    p.vbar_stack(
+        typ,
+        x='time',
+        width=0.4,
+        color=colors,
+        source=source,
+        legend=[value(x) for x in typ])
+
+    p.y_range.start = 0
+    p.x_range.start = -0.5
+    # p.xgrid.grid_line_color = None
+    # p.axis.minor_tick_line_color = None
+    # p.outline_line_color = None
+    p.legend.location = "top_left"
+    p.legend.orientation = "horizontal"
+
+    show(p)
+    return p
+
+
+def check():
+    global FN
+    t = time.time()
+
+    mt = os.path.getmtime(FN)
+    print(t, mt, t - mt)
+
+    return ((t - mt) > 900)
+
+
+@app.route('/')
+def home():
+    if check():
+        save()
+
+    bokeh_draw()
+
+    return app.send_static_file('index.html')
+
+
+if __name__ == '__main__':
+    app.run(debug=False)
+    # app.run(debug=True)
