@@ -142,7 +142,7 @@ def plt_draw(df):
 
 
 def bokeh_draw():
-    output_file('templates/index.html')
+    output_file('templates/index.html', title='TPEflow')
 
     df = pd.read_csv(FN)
 
