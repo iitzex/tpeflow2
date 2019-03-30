@@ -160,13 +160,11 @@ def bokeh_draw():
         'ARR',
         'DEP',
     ]
-    t = time.time()
-    typ.append(t)
     colors = ["#FFCC00", "#3366FF"]
     p = figure(
         plot_height=550,
         plot_width=800,
-        title='TPEFlow',
+        title='TPEFlow ' + T(time.time()),
         tools="hover",
         tooltips="($index)$name: @$name",
         toolbar_location=None)
@@ -193,10 +191,13 @@ def check():
     global FN, TIMEOUT
     t = time.time()
 
-    mt = os.path.getmtime(FN)
-    print(t, mt, t - mt)
+    if os.path.isfile(FN):
+        mt = os.path.getmtime(FN)
+        print(t, mt, t - mt)
 
-    return ((t - mt) > TIMEOUT)
+        return ((t - mt) > TIMEOUT)
+    else:
+        return True
 
 
 @app.route('/')
