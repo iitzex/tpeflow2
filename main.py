@@ -130,7 +130,6 @@ def execute():
 
     df = pd.DataFrame(
         np.array(TRAFFIC), columns=['CS', 'TS', 'DATE', 'HOUR', 'TYP'])
-    os.remove(FN)
     df.to_csv(FN)
 
 
@@ -195,9 +194,12 @@ def check():
         mt = os.path.getmtime(FN)
         print(t, mt, t - mt)
 
-        return ((t - mt) > TIMEOUT)
-    else:
-        return True
+        if (t - mt) < TIMEOUT:
+            return False
+        
+        os.remove(FN)
+
+    return True
 
 
 @app.route('/')
