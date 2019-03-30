@@ -156,7 +156,9 @@ def bokeh_draw():
 
     source = ColumnDataSource(source)
 
-    typ = ['ARR', 'DEP']
+    typ = ['ARR', 'DEP', ]
+    t = time.time()
+    typ.append(t)
     colors = ["#FFCC00", "#3366FF"]
     p = figure(
         plot_height=550,
@@ -172,8 +174,6 @@ def bokeh_draw():
         color=colors,
         source=source,
         legend=[value(x) for x in typ])
-        t = time.time()
-        legend.append(value(t))
 
     p.y_range.start = 0
     p.x_range.start = -0.5
