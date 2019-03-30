@@ -1,7 +1,8 @@
 import os
 import time
 import requests
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+import pytz
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -25,13 +26,15 @@ def T(ts):
 
 
 def hour(ts):
-    return datetime.fromtimestamp(ts).strftime("%H")
+    return datetime.fromtimestamp(ts).astimezone(
+        pytz.timezone('Asia/Taipei')).strftime("%H")
 
 
 def day_begin_ts():
-    d = datetime.utcnow().date()
-    t = datetime(d.year, d.month, d.day, 8, 0, 0, 0)
-    ts = time.mktime(t.timetuple())
+    d = datetime.now().date()
+    t = datetime(d.year, d.month, d.day, 0, 0, 0, 0)
+    ts = time.mktime(t.timetuple()) - 28800
+    print(t, ts)
     return ts
 
 
@@ -39,7 +42,11 @@ def day_end_ts():
     return day_begin_ts() + 86400
 
 
-def fetch(i, t):
+t_begin = day_begin_ts()
+t_end = day_end_ts()
+
+
+def fetch(i, typ):
     headers = {
         'Host': 'api.flightradar24.com',
         'User-Agent':
@@ -52,6 +59,7 @@ def fetch(i, t):
         'Connection': 'keep-alive',
     }
 
+    global t_begin
     params = (
         ('code', 'TPE'),
         ('plugin[]', ''),
@@ -59,9 +67,9 @@ def fetch(i, t):
         ('limit', '100'),
 
         # beging of day
-        ('plugin-setting[schedulj][mode]', t),
-        ('plugin-setting[schedule][timestamp]', day_begin_ts()),
-        ('plugin-setting[estimate][mode]', t),
+        ('plugin-setting[schedulj][mode]', typ),
+        ('plugin-setting[schedule][timestamp]', t_begin),
+        ('plugin-setting[estimate][mode]', typ),
 
         # now
         # ('plugin-setting[estimate][timestamp]', day_begin_ts()),
@@ -87,8 +95,8 @@ def page(i, typ):
         t = status(v, typ)
         tstr = T(t)
 
-        t_begin = day_begin_ts()
-        t_end = day_end_ts()
+        global t_begin
+        global t_end
         if t and t_begin < t < t_end:
             # print((i - 1) * 100 + k, cs(v), tstr, hour(t), t)
             TRAFFIC.append([cs(v), t, tstr, hour(t), (typ[:3]).upper()])
@@ -196,7 +204,7 @@ def check():
 
         if (t - mt) < TIMEOUT:
             return False
-        
+
         os.remove(FN)
 
     return True
