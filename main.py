@@ -190,7 +190,7 @@ def check():
     t = time.time()
 
     mt = os.path.getmtime(FN)
-    # print(t, mt, t - mt)
+    print(t, mt, t - mt)
 
     return ((t - mt) > TIMEOUT)
 
