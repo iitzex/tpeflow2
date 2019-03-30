@@ -14,7 +14,7 @@ from bokeh.models import ColumnDataSource
 
 TRAFFIC = []
 FN = 'out.csv'
-TIMEOUT = 120
+TIMEOUT = 300
 app = Flask(__name__)
 
 
