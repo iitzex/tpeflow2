@@ -172,6 +172,8 @@ def bokeh_draw():
         color=colors,
         source=source,
         legend=[value(x) for x in typ])
+        t = time.time()
+        legend.append(value(t))
 
     p.y_range.start = 0
     p.x_range.start = -0.5
@@ -199,8 +201,7 @@ def check():
 def home():
     if check():
         execute()
-
-    bokeh_draw()
+        bokeh_draw()
 
     return render_template('index.html')
 
