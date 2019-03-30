@@ -22,7 +22,8 @@ app = Flask(__name__)
 def T(ts):
     if ts == None:
         return '-'
-    return datetime.fromtimestamp(ts).strftime("%m/%d-%H:%M")
+    return datetime.fromtimestamp(ts).astimezone(
+        pytz.timezone('Asia/Taipei')).strftime("%m/%d-%H:%M")
 
 
 def hour(ts):
