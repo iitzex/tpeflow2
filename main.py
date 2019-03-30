@@ -32,10 +32,10 @@ def hour(ts):
 
 
 def day_begin_ts():
-    d = datetime.now().date()
+    d = datetime.utcfromtimestamp(time.time()+28800).date()
     t = datetime(d.year, d.month, d.day, 0, 0, 0, 0)
     ts = time.mktime(t.timetuple()) - 28800
-    print(t, ts)
+    print(d, t, ts)
     return ts
 
 
