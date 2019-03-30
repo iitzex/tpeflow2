@@ -14,7 +14,7 @@ from bokeh.models import ColumnDataSource
 
 TRAFFIC = []
 FN = 'out.csv'
-TIMEOUT = 300
+TIMEOUT = 200
 app = Flask(__name__)
 
 
@@ -29,8 +29,8 @@ def hour(ts):
 
 
 def day_begin_ts():
-    d = datetime.now().date()
-    t = datetime(d.year, d.month, d.day, 0, 0, 0, 0)
+    d = datetime.utcnow().date()
+    t = datetime(d.year, d.month, d.day, 8, 0, 0, 0)
     ts = time.mktime(t.timetuple())
     return ts
 
