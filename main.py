@@ -130,7 +130,8 @@ def execute():
 
     df = pd.DataFrame(
         np.array(TRAFFIC), columns=['CS', 'TS', 'DATE', 'HOUR', 'TYP'])
-    df.to_csv('out.csv')
+    os.remove(FN)
+    df.to_csv(FN)
 
 
 def plt_draw(df):
@@ -142,10 +143,9 @@ def plt_draw(df):
 
 
 def bokeh_draw():
-    output_file('templates/index.html', title='TPEflow')
-
     df = pd.read_csv(FN)
 
+    output_file('templates/index.html', title='TPEflow')
     count = df.groupby(['HOUR', 'TYP']).size().unstack()
     hour = [i for i in range(len(count.index))]
     source = {
@@ -156,7 +156,10 @@ def bokeh_draw():
 
     source = ColumnDataSource(source)
 
-    typ = ['ARR', 'DEP', ]
+    typ = [
+        'ARR',
+        'DEP',
+    ]
     t = time.time()
     typ.append(t)
     colors = ["#FFCC00", "#3366FF"]
@@ -184,7 +187,6 @@ def bokeh_draw():
     p.legend.orientation = "horizontal"
 
     save(p)
-    return p
 
 
 def check():
@@ -213,4 +215,3 @@ if __name__ == '__main__':
 
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=debug)
-
