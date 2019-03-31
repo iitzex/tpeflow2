@@ -169,10 +169,11 @@ def bokeh_draw(df):
         'DEP',
     ]
     colors = ["#FFCC00", "#3366FF"]
+    mt = os.path.getmtime(FN)
     p = figure(
         plot_height=550,
         plot_width=800,
-        title='TPEFlow ' + T(time.time()),
+        title='TPEFlow ' + T(mt),
         tools="hover",
         tooltips="($index)$name: @$name",
         toolbar_location=None)
@@ -220,6 +221,8 @@ def summary():
 @app.route('/')
 def home():
     if check():
+        global TRAFFIC
+        TRAFFIC = []
         df = execute()
         bokeh_draw(df)
 
