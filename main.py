@@ -26,20 +26,18 @@ app = Flask(__name__)
 def T(ts):
     if ts == None:
         return '-'
-    d = datetime.utcfromtimestamp(ts)
-    d.astimezone(tw)
+    d = datetime.fromtimestamp(ts, tz=tw)
     return d.strftime("%m/%d-%H:%M")
 
 
 def H(ts):
-    d = datetime.utcfromtimestamp(ts)
-    d.astimezone(tw)
+    d = datetime.fromtimestamp(ts, tz=tw)
     return d.strftime("%H")
 
 
 def day_begin_ts():
-    d = datetime.utcnow()
-    ts = calendar.timegm(d.timetuple()) - d.hour * 3600 - d.minute * 60 - d.second - 28800
+    d = datetime.now(tw)
+    ts = time.time() - d.hour * 3600 - d.minute * 60 - d.second 
     print(d, ts)
     return ts
 
