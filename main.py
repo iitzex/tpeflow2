@@ -39,7 +39,7 @@ def day_begin_ts():
     t = datetime(d.year, d.month, d.day, 0, 0, 0, 0)
     t_l = datetime.replace(t, tzinfo=pytz.timezone('Asia/Taipei'))
     ts = time.mktime(t_l.timetuple()) - 28800
-    print(d, t, ts)
+    print(d, t, ts, time.localtime(ts))
     return ts
 
 
