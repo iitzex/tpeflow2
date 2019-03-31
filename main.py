@@ -6,7 +6,7 @@ import pytz
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 from bokeh.embed import components
 from bokeh.core.properties import value
 from bokeh.io import save, show, output_file
@@ -32,7 +32,7 @@ def hour(ts):
 
 
 def day_begin_ts():
-    d = datetime.utcfromtimestamp(time.time()+28800).date()
+    d = datetime.utcfromtimestamp(time.time() + 28800).date()
     t = datetime(d.year, d.month, d.day, 0, 0, 0, 0)
     ts = time.mktime(t.timetuple()) - 28800
     print(d, t, ts)
@@ -151,6 +151,10 @@ def plt_draw(df):
 
 
 def bokeh_draw():
+    with open(FN) as f:
+        l = f.readlines()
+        for i in l:
+            print(l)
     df = pd.read_csv(FN)
 
     output_file('templates/index.html', title='TPEflow')
@@ -209,6 +213,12 @@ def check():
         os.remove(FN)
 
     return True
+
+
+@app.route('/out.json')
+def summary():
+    df = pd.read_csv(FN)
+    return df.to_json(orient='records')
 
 
 @app.route('/')
