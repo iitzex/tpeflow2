@@ -32,7 +32,8 @@ def hour(ts):
 
 
 def day_begin_ts():
-    d = datetime.utcfromtimestamp(time.time() + 28800).date()
+    d = datetime.now(pytz.timezone('Asia/Taipei'))
+    # d = datetime.utcfromtimestamp(time.time() + 28800).date()
     t = datetime(d.year, d.month, d.day, 0, 0, 0, 0)
     ts = time.mktime(t.timetuple()) - 28800
     print(d, t, ts)
@@ -151,10 +152,10 @@ def plt_draw(df):
 
 
 def bokeh_draw():
-    with open(FN) as f:
-        l = f.readlines()
-        for i in l:
-            print(l)
+    # with open(FN) as f:
+    #     l = f.readlines()
+    #     for i in l:
+    #         print(l)
     df = pd.read_csv(FN)
 
     output_file('templates/index.html', title='TPEflow')
