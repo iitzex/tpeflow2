@@ -2,6 +2,7 @@ import os
 import time
 import requests
 from datetime import datetime, timedelta, timezone
+import calendar
 import pytz
 import numpy as np
 import pandas as pd
@@ -18,28 +19,28 @@ FN = 'out.csv'
 TIMEOUT = 200
 t_begin = 0
 t_end = 0
+tw = pytz.timezone('Asia/Taipei')
 app = Flask(__name__)
 
 
 def T(ts):
     if ts == None:
         return '-'
-    return datetime.fromtimestamp(ts).astimezone(
-        pytz.timezone('Asia/Taipei')).strftime("%m/%d-%H:%M")
+    d = datetime.utcfromtimestamp(ts)
+    d.astimezone(tw)
+    return d.strftime("%m/%d-%H:%M")
 
 
-def hour(ts):
-    return datetime.fromtimestamp(ts).astimezone(
-        pytz.timezone('Asia/Taipei')).strftime("%H")
+def H(ts):
+    d = datetime.utcfromtimestamp(ts)
+    d.astimezone(tw)
+    return d.strftime("%H")
 
 
 def day_begin_ts():
-    d = datetime.now(pytz.timezone('Asia/Taipei'))
-    # d = datetime.utcfromtimestamp(time.time() + 28800).date()
-    t = datetime(d.year, d.month, d.day, 0, 0, 0, 0)
-    t_l = datetime.replace(t, tzinfo=pytz.timezone('Asia/Taipei'))
-    ts = time.mktime(t_l.timetuple()) - 28800
-    print(d, t, ts, time.localtime(ts))
+    d = datetime.utcnow()
+    ts = calendar.timegm(d.timetuple()) - d.hour * 3600 - d.minute * 60 - d.second - 28800
+    print(d, ts)
     return ts
 
 
@@ -98,13 +99,11 @@ def page(i, typ):
         'data']
     for k, v in enumerate(data):
         t = status(v, typ)
-        tstr = T(t)
 
         global t_begin
         global t_end
         if t and t_begin < t < t_end:
-            # print((i - 1) * 100 + k, cs(v), tstr, hour(t), t)
-            TRAFFIC.append([cs(v), t, tstr, hour(t), (typ[:3]).upper()])
+            TRAFFIC.append([cs(v), t, T(t), H(t), (typ[:3]).upper()])
 
 
 def status(v, typ):
@@ -144,6 +143,7 @@ def execute():
     df = pd.DataFrame(
         np.array(TRAFFIC), columns=['CS', 'TS', 'DATE', 'HOUR', 'TYP'])
     df.to_csv(FN)
+    return df
 
 
 def plt_draw(df):
@@ -154,13 +154,7 @@ def plt_draw(df):
     # plt.show()
 
 
-def bokeh_draw():
-    # with open(FN) as f:
-    #     l = f.readlines()
-    #     for i in l:
-    #         print(l)
-    df = pd.read_csv(FN)
-
+def bokeh_draw(df):
     output_file('templates/index.html', title='TPEflow')
     count = df.groupby(['HOUR', 'TYP']).size().unstack()
     hour = [i for i in range(len(count.index))]
@@ -228,8 +222,8 @@ def summary():
 @app.route('/')
 def home():
     if check():
-        execute()
-        bokeh_draw()
+        df = execute()
+        bokeh_draw(df)
 
     return render_template('index.html')
 
