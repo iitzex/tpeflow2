@@ -16,6 +16,8 @@ from bokeh.models import ColumnDataSource
 TRAFFIC = []
 FN = 'out.csv'
 TIMEOUT = 200
+t_begin = 0
+t_end = 0
 app = Flask(__name__)
 
 
@@ -35,17 +37,14 @@ def day_begin_ts():
     d = datetime.now(pytz.timezone('Asia/Taipei'))
     # d = datetime.utcfromtimestamp(time.time() + 28800).date()
     t = datetime(d.year, d.month, d.day, 0, 0, 0, 0)
-    ts = time.mktime(t.timetuple()) - 28800
+    t_l = datetime.replace(t, tzinfo=pytz.timezone('Asia/Taipei'))
+    ts = time.mktime(t_l.timetuple()) - 28800
     print(d, t, ts)
     return ts
 
 
 def day_end_ts():
     return day_begin_ts() + 86400
-
-
-t_begin = day_begin_ts()
-t_end = day_end_ts()
 
 
 def fetch(i, typ):
@@ -62,6 +61,10 @@ def fetch(i, typ):
     }
 
     global t_begin
+    global t_end
+    t_begin = day_begin_ts()
+    t_end = day_end_ts()
+
     params = (
         ('code', 'TPE'),
         ('plugin[]', ''),
