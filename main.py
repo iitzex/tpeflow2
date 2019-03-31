@@ -16,7 +16,7 @@ from bokeh.models import ColumnDataSource
 
 TRAFFIC = []
 FN = 'out.csv'
-TIMEOUT = 200
+TIMEOUT = 240
 t_begin = 0
 t_end = 0
 tw = pytz.timezone('Asia/Taipei')
@@ -168,7 +168,7 @@ def bokeh_draw(df):
         'ARR',
         'DEP',
     ]
-    colors = ["#FFCC00", "#3366FF"]
+    colors = ["#fdae6b", "#3182bd"]
     mt = os.path.getmtime(FN)
     p = figure(
         plot_height=550,
