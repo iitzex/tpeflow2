@@ -37,7 +37,7 @@ def H(ts):
 
 def day_begin_ts():
     d = datetime.now(tw)
-    ts = time.time() - d.hour * 3600 - d.minute * 60 - d.second 
+    ts = time.time() - d.hour * 3600 - d.minute * 60 - d.second
     print(d, ts)
     return ts
 
@@ -141,6 +141,7 @@ def execute():
     df = pd.DataFrame(
         np.array(TRAFFIC), columns=['CS', 'TS', 'DATE', 'HOUR', 'TYP'])
     df.to_csv(FN)
+
     return df
 
 
