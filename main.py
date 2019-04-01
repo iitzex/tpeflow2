@@ -15,7 +15,8 @@ from bokeh.plotting import figure
 from bokeh.models import ColumnDataSource
 
 TRAFFIC = []
-FN = 'out.csv'
+OUT = 'out.csv'
+INDEX = 'templates/index.html'
 TIMEOUT = 240
 t_begin = 0
 t_end = 0
@@ -96,7 +97,7 @@ def page(i, typ):
     data = j['result']['response']['airport']['pluginData']['schedule'][typ][
         'data']
     for k, v in enumerate(data):
-        t = status(v, typ)
+        t = event(v, typ)
 
         global t_begin
         global t_end
@@ -104,7 +105,7 @@ def page(i, typ):
             TRAFFIC.append([cs(v), t, T(t), H(t), (typ[:3]).upper()])
 
 
-def status(v, typ):
+def event(v, typ):
     status = v['flight']['status']['generic']['status']['text']
 
     scheduled_t = v['flight']['time']['scheduled'][typ[:-1]]
@@ -140,7 +141,7 @@ def execute():
 
     df = pd.DataFrame(
         np.array(TRAFFIC), columns=['CS', 'TS', 'DATE', 'HOUR', 'TYP'])
-    df.to_csv(FN)
+    df.to_csv(OUT)
 
     return df
 
@@ -154,7 +155,8 @@ def plt_draw(df):
 
 
 def bokeh_draw(df):
-    output_file('templates/index.html', title='TPEflow')
+    global INDEX
+    output_file(INDEX, title='TPEflow')
     count = df.groupby(['HOUR', 'TYP']).size().unstack()
     hour = [i for i in range(len(count.index))]
     source = {
@@ -170,7 +172,7 @@ def bokeh_draw(df):
         'DEP',
     ]
     colors = ["#fdae6b", "#3182bd"]
-    mt = os.path.getmtime(FN)
+    mt = os.path.getmtime(OUT)
     p = figure(
         plot_height=550,
         plot_width=800,
@@ -198,24 +200,25 @@ def bokeh_draw(df):
 
 
 def check():
-    global FN, TIMEOUT
+    global OUT, TIMEOUT
     t = time.time()
 
-    if os.path.isfile(FN):
-        mt = os.path.getmtime(FN)
+    if os.path.isfile(OUT):
+        mt = os.path.getmtime(OUT)
         print(t, mt, t - mt)
 
         if (t - mt) < TIMEOUT:
             return False
 
-        os.remove(FN)
+        os.remove(INDEX)
+        os.remove(OUT)
 
     return True
 
 
 @app.route('/out.json')
 def summary():
-    df = pd.read_csv(FN)
+    df = pd.read_csv(OUT)
     return df.to_json(orient='records')
 
 
