@@ -174,6 +174,7 @@ def bokeh_draw():
     ]
     colors = ["#fdae6b", "#3182bd"]
     mt = os.path.getmtime(OUT)
+    print(mt)
     p = figure(
         plot_height=550,
         plot_width=800,
