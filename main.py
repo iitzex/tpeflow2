@@ -199,6 +199,8 @@ def bokeh_draw():
     p.legend.orientation = "horizontal"
 
     save(p)
+    script, div = components(p)
+    return script, div
 
 
 def check():
@@ -233,9 +235,10 @@ def home():
     if os.path.isfile(INDEX):
         os.remove(INDEX)
 
-    bokeh_draw()
+    script, div = bokeh_draw()
+    content = {script: script, div: div}
 
-    return render_template('index.html')
+    return render_template('index.html', content=content)
 
 
 if __name__ == '__main__':
