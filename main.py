@@ -210,8 +210,10 @@ def check():
         if (t - mt) < TIMEOUT:
             return False
 
-        os.remove(INDEX)
         os.remove(OUT)
+
+    if os.path.isfile(INDEX):
+        os.remove(INDEX)
 
     return True
 
