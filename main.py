@@ -17,7 +17,7 @@ from bokeh.models import ColumnDataSource
 TRAFFIC = []
 OUT = 'out.csv'
 INDEX = 'templates/index.html'
-TIMEOUT = 100
+TIMEOUT = 300
 t_begin = 0
 t_end = 0
 tw = pytz.timezone('Asia/Taipei')
