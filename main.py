@@ -17,7 +17,7 @@ from bokeh.models import ColumnDataSource
 TRAFFIC = []
 OUT = 'out.csv'
 INDEX = 'templates/index.html'
-TIMEOUT = 300
+TIMEOUT = 60
 t_begin = 0
 t_end = 0
 tw = pytz.timezone('Asia/Taipei')
@@ -232,9 +232,6 @@ def home():
         TRAFFIC = []
         execute()
     
-    if os.path.isfile(INDEX):
-        os.remove(INDEX)
-
     script, div = bokeh_draw()
     content = {script: script, div: div}
 
