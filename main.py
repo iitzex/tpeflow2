@@ -154,8 +154,9 @@ def plt_draw(df):
     # plt.show()
 
 
-def bokeh_draw(df):
+def bokeh_draw():
     global INDEX
+    df = pd.read_csv(OUT)
     output_file(INDEX, title='TPEflow')
     count = df.groupby(['HOUR', 'TYP']).size().unstack()
     hour = [i for i in range(len(count.index))]
@@ -212,9 +213,6 @@ def check():
 
         os.remove(OUT)
 
-    if os.path.isfile(INDEX):
-        os.remove(INDEX)
-
     return True
 
 
@@ -229,8 +227,12 @@ def home():
     if check():
         global TRAFFIC
         TRAFFIC = []
-        df = execute()
-        bokeh_draw(df)
+        execute()
+    
+    if os.path.isfile(INDEX):
+        os.remove(INDEX)
+
+    bokeh_draw()
 
     return render_template('index.html')
 
