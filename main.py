@@ -1,18 +1,19 @@
+import calendar
 import os
 import time
-import requests
 from datetime import datetime, timedelta, timezone
-import calendar
-import pytz
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from flask import Flask, render_template, jsonify
-from bokeh.embed import components
+import pytz
+import requests
 from bokeh.core.properties import value
-from bokeh.io import save, show, output_file
-from bokeh.plotting import figure
+from bokeh.embed import components
+from bokeh.io import output_file, save
 from bokeh.models import ColumnDataSource
+from bokeh.plotting import figure
+from flask import Flask, render_template, escape, Markup
 
 TRAFFIC = []
 OUT = 'out.csv'
@@ -157,7 +158,7 @@ def plt_draw(df):
 def bokeh_draw():
     global INDEX
     df = pd.read_csv(OUT)
-    # output_file(INDEX, title='TPEflow')
+    output_file('main.html', title='TPEflow')
     count = df.groupby(['HOUR', 'TYP']).size().unstack()
     hour = [i for i in range(len(count.index))]
     source = {
@@ -198,7 +199,7 @@ def bokeh_draw():
     p.legend.location = "top_left"
     p.legend.orientation = "horizontal"
 
-    save(p)
+    save(p, filename='main.html', title='TPEFlow')
     script, div = components(p)
     return script, div
 
@@ -237,9 +238,10 @@ def home():
         execute()
 
     script, div = bokeh_draw()
-    content = {script: script, div: div}
 
-    return render_template('index.html', content=content)
+    html = render_template(
+        'index.html', script=Markup(script), div=Markup(div))
+    return html
 
 
 if __name__ == '__main__':
