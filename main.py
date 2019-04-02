@@ -1,7 +1,7 @@
 import calendar
 import os
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -13,12 +13,12 @@ from bokeh.embed import components
 from bokeh.io import output_file, save
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import figure
-from flask import Flask, render_template, escape, Markup
+from flask import Flask, render_template, Markup
 
 TRAFFIC = []
 OUT = 'out.csv'
 INDEX = 'templates/index.html'
-TIMEOUT = 60
+TIMEOUT = 300
 t_begin = 0
 t_end = 0
 tw = pytz.timezone('Asia/Taipei')
