@@ -157,7 +157,7 @@ def plt_draw(df):
 def bokeh_draw():
     global INDEX
     df = pd.read_csv(OUT)
-    output_file(INDEX, title='TPEflow')
+    # output_file(INDEX, title='TPEflow')
     count = df.groupby(['HOUR', 'TYP']).size().unstack()
     hour = [i for i in range(len(count.index))]
     source = {
@@ -198,7 +198,7 @@ def bokeh_draw():
     p.legend.location = "top_left"
     p.legend.orientation = "horizontal"
 
-    # save(p)
+    save(p)
     script, div = components(p)
     return script, div
 
