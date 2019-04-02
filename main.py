@@ -198,7 +198,7 @@ def bokeh_draw():
     p.legend.location = "top_left"
     p.legend.orientation = "horizontal"
 
-    save(p)
+    # save(p)
     script, div = components(p)
     return script, div
 
@@ -220,6 +220,9 @@ def check():
 
         os.remove(OUT)
 
+    if os.path.isfile(INDEX):
+        os.remove(INDEX)
+
     return True
 
 
@@ -235,7 +238,7 @@ def home():
         global TRAFFIC
         TRAFFIC = []
         execute()
-    
+
     script, div = bokeh_draw()
     content = {script: script, div: div}
 
