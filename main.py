@@ -179,7 +179,7 @@ def bokeh_draw():
     p = figure(
         plot_height=550,
         plot_width=800,
-        y_range=(0, 55)
+        y_range=(0, 55),
         title='TPEFlow ' + T(mt),
         tools="hover",
         tooltips="($index)$name: @$name",
