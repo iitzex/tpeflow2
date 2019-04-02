@@ -204,6 +204,10 @@ def bokeh_draw():
 
 
 def check():
+    d = 'templates/'
+    if not os.path.exists(d):
+        os.makedirs(d)
+
     global OUT, TIMEOUT
     t = time.time()
 
@@ -228,7 +232,6 @@ def summary():
 @app.route('/')
 def home():
     if check():
-        os.mkdir('templates')
         global TRAFFIC
         TRAFFIC = []
         execute()
