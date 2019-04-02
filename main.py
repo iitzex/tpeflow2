@@ -220,9 +220,6 @@ def check():
 
         os.remove(OUT)
 
-    if os.path.isfile(INDEX):
-        os.remove(INDEX)
-
     return True
 
 
