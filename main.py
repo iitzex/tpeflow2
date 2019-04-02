@@ -228,6 +228,7 @@ def summary():
 @app.route('/')
 def home():
     if check():
+        os.mkdir('templates')
         global TRAFFIC
         TRAFFIC = []
         execute()
