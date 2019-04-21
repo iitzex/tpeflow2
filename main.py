@@ -122,11 +122,14 @@ def event(v, typ):
 
 
 def cs(v):
-    sn = v['flight']['identification']['number']['default']
-    icao = v['flight']['airline']['code']['icao']
-    cs = icao + sn[2:]
-
-    return cs
+    try:
+        sn = v['flight']['identification']['number']['default']
+        icao = v['flight']['airline']['code']['icao']
+        cs = icao + sn[2:]
+        return cs
+    except TypeError as e:
+        print(sn)
+        return sn
 
 
 def execute():
